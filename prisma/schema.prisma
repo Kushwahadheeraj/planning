@@ -6,7 +6,6 @@
 
 generator client {
   provider = "prisma-client-js"
-  output   = "../generated/prisma"
 }
 
 datasource db {
@@ -15,80 +14,64 @@ datasource db {
 }
 
 model User {
-  id            String    @id @default(uuid())
-  email         String    @unique
+  id            String         @id
+  email         String         @unique
   name          String?
-  role          String    @default("USER")
-  created_at    DateTime  @default(now())
-  updated_at    DateTime  @updatedAt
-  events        Event[]   @relation("EventCreator")
-  rsvps         RSVP[]
+  role          Role           @default(USER)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  profile       Profile?
+  events        Event[]
+  bookings      Booking[]
+  notifications Notification[]
 }
 
 model Profile {
-  id            String    @id @default(cuid())
-  userId        String    @unique
-  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  bio           String?
-  phone         String?
-  address       String?
-  profileImage  String?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  bio       String?
+  avatar    String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Event {
-  id            String    @id @default(uuid())
-  title         String
-  description   String
-  start_date    DateTime
-  end_date      DateTime
-  location      String
-  created_at    DateTime  @default(now())
-  updated_at    DateTime  @updatedAt
-  creator_id    String
-  creator       User      @relation("EventCreator", fields: [creator_id], references: [id])
-  rsvps         RSVP[]
-  custom_fields Json?     // For additional customizable fields
-  public_url    String    @unique
-  is_published  Boolean   @default(false)
-}
-
-model RSVP {
-  id            String    @id @default(uuid())
-  event_id      String
-  user_id       String
-  status        String    @default("PENDING") // PENDING, CONFIRMED, CANCELLED
-  created_at    DateTime  @default(now())
-  updated_at    DateTime  @updatedAt
-  event         Event     @relation(fields: [event_id], references: [id])
-  user          User      @relation(fields: [user_id], references: [id])
-  custom_data   Json?     // For additional RSVP form data
-
-  @@unique([event_id, user_id])
+  id          String    @id @default(cuid())
+  title       String
+  description String?
+  date        DateTime
+  location    String?
+  capacity    Int?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  createdBy   User      @relation(fields: [userId], references: [id])
+  userId      String
+  bookings    Booking[]
 }
 
 model Booking {
-  id            String    @id @default(cuid())
-  userId        String
-  user          User      @relation(fields: [userId], references: [id])
-  eventId       String
-  event         Event     @relation(fields: [eventId], references: [id])
-  status        BookingStatus @default(PENDING)
-  paymentStatus PaymentStatus @default(PENDING)
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  id        String        @id @default(cuid())
+  userId    String
+  user      User          @relation(fields: [userId], references: [id])
+  eventId   String
+  event     Event         @relation(fields: [eventId], references: [id])
+  status    BookingStatus @default(PENDING)
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  @@unique([userId, eventId])
 }
 
 model Notification {
-  id            String    @id @default(cuid())
-  userId        String
-  user          User      @relation(fields: [userId], references: [id])
-  title         String
-  message       String
-  isRead        Boolean   @default(false)
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  title     String
+  message   String
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 enum Role {
@@ -125,4 +108,11 @@ enum PaymentStatus {
   COMPLETED
   FAILED
   REFUNDED
+}
+
+enum RSVPStatus {
+  PENDING
+  CONFIRMED
+  DECLINED
+  CANCELLED
 }
