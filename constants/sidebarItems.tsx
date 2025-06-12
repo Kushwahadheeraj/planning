@@ -1,169 +1,215 @@
 "use client"
-import { Button, Card, Col, Drawer, Menu, type MenuProps } from "antd";
-import {
-  ProfileOutlined,
-  TableOutlined,
-  AppstoreOutlined,
-  ScheduleOutlined,
-  CreditCardOutlined,
-} from "@ant-design/icons";
+import React from "react";
 import Link from "next/link";
 import { USER_ROLE } from "./role";
 import { getUserInfo } from "@/services/auth.service";
 import AdminNotification from "@/components/view/AdminNotification/AdminNotificaton";
- import CustomerNotification from "@/components/view/CustomerNotification/CustomerNotification";
+import CustomerNotification from "@/components/view/CustomerNotification/CustomerNotification";
 import CustomerBookingCart from "@/components/view/CustomerBookingCart/CustomerBookingCart";
 import SuperAdminNotification from "@/components/view/SuperAdminNotification/SuprtAdminNotification";
+import {
+  NavigationMenu,
+  NavigationMenuContent,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+  NavigationMenuTrigger,
+  navigationMenuTriggerStyle,
+} from "@/components/ui/navigation-menu";
+import { cn } from "@/lib/utils";
+import {
+  User,
+  Users,
+  Calendar,
+  CreditCard,
+  LayoutGrid,
+  FileText,
+  Home,
+} from "lucide-react";
 
+interface SidebarItem {
+  title: string;
+  href?: string;
+  icon: React.ReactNode;
+  items?: {
+    title: string;
+    href: string;
+    description: string;
+  }[];
+}
 
+const ListItem = React.forwardRef<
+  React.ElementRef<"a">,
+  React.ComponentPropsWithoutRef<"a">
+>(({ className, title, children, ...props }, ref) => {
+  return (
+    <li>
+      <NavigationMenuLink asChild>
+        <a
+          ref={ref}
+          className={cn(
+            "block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground",
+            className
+          )}
+          {...props}
+        >
+          <div className="text-sm font-medium leading-none">{title}</div>
+          <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+            {children}
+          </p>
+        </a>
+      </NavigationMenuLink>
+    </li>
+  );
+});
+ListItem.displayName = "ListItem";
 
 export const sidebarItems = (role: string) => {
-  
-
-    const publicSidebarItems: MenuProps["items"] = [
+  const publicSidebarItems: SidebarItem[] = [
     {
-      label: <Link href={'/'}>Home</Link>,
-      key: "home",
-      icon: <ProfileOutlined />,
-    
+      title: "Home",
+      href: "/",
+      icon: <Home className="h-4 w-4" />,
     },
-    //  {
-    //   label: <Link href={'/category'}>Category</Link>,
-    //   key: "category",
-    //   icon: <ProfileOutlined />,
-    // },
-    //  {
-    //   label: <Link href={'/services'}>Services</Link>,
-    //   key: "services",
-    //   icon: <ProfileOutlined />,
-    // },
-  
   ];
-  const defaultSidebarItems: MenuProps["items"] = [
+
+  const defaultSidebarItems: SidebarItem[] = [
     {
-      label: "Profile",
-      key: "profile",
-      icon: <ProfileOutlined />,
-      children: [
+      title: "Profile",
+      icon: <User className="h-4 w-4" />,
+      items: [
         {
-          label: <Link href={`/${role}/my-profile`}>Account Profile</Link>,
-          key: `/${role}/my-profile`,
+          title: "Account Profile",
+          href: `/${role}/my-profile`,
+          description: "View and edit your profile information",
         },
         {
-          label: <Link href={`/${role}/change-password`}>Change Password</Link>,
-          key: `/${role}/change-password`,
+          title: "Change Password",
+          href: `/${role}/change-password`,
+          description: "Update your password",
         },
       ],
     },
   ];
 
-  const commonAdminSidebarItems: MenuProps["items"] = [
+  const commonAdminSidebarItems: SidebarItem[] = [
     {
-      label: <Link href={`/${role}/allusers`}>Manage Users</Link>,
-      icon: <TableOutlined />,
-      key: `/${role}/manage-user`,
-    },
-    {
-      label: <Link href={`/${role}/booking`}>Manage Bookings</Link>,
-      icon: <TableOutlined />,
-      key: `/${role}/manage-customer`,
+      title: "Manage Users",
+      href: `/${role}/allusers`,
+      icon: <Users className="h-4 w-4" />,
     },
     {
-      label: <Link href={`/${role}/category`}> Manage Services</Link>,
-      icon: <TableOutlined />,
-      key: `/${role}/manage-category`,
+      title: "Manage Bookings",
+      href: `/${role}/booking`,
+      icon: <Calendar className="h-4 w-4" />,
     },
-     {
-      label: <Link href={`/${role}/service`}>Manage Categorys</Link>,
-      icon: <TableOutlined />,
-      key: `/${role}/manage-booking`,
+    {
+      title: "Manage Services",
+      href: `/${role}/category`,
+      icon: <LayoutGrid className="h-4 w-4" />,
     },
-     {
-      label: <Link href={`/${role}/blogPage`}>Manage blog</Link>,
-      icon: <TableOutlined />,
-      key: `/${role}/manage-blog`,
+    {
+      title: "Manage Categories",
+      href: `/${role}/service`,
+      icon: <LayoutGrid className="h-4 w-4" />,
     },
-      {
-      label:'',
-      icon: <AdminNotification/>,
-      key: `drawer`,
+    {
+      title: "Manage Blog",
+      href: `/${role}/blogPage`,
+      icon: <FileText className="h-4 w-4" />,
     },
-    
-     
-
+    {
+      title: "",
+      icon: <AdminNotification />,
+    },
   ];
 
-  const adminSidebarItems: MenuProps["items"] = [
-    ...defaultSidebarItems,
-    ...commonAdminSidebarItems,
-  
-  ];
+  const adminSidebarItems = [...defaultSidebarItems, ...commonAdminSidebarItems];
 
-  const superAdminSidebarItems: MenuProps["items"] = [
-    ...defaultSidebarItems,
-      {
-      label:'',
-      icon: <SuperAdminNotification/>,
-      key: `drawer`,
-    },
-   // ...commonAdminSidebarItems,
-    // {
-    //   label: <Link href={`/${role}/manageadmin`}>Manage Admin</Link>,
-    //   icon: <TableOutlined />,
-    //   key: `/${role}/manage-something`,
-    // }
-    
-   
-  ];
-
-
-  const customerSidebarItems: MenuProps["items"] = [
+  const superAdminSidebarItems: SidebarItem[] = [
     ...defaultSidebarItems,
     {
-      label: <Link href={`/${role}/my-profile`}>Profile</Link>,
-      icon: <TableOutlined />,
-      key: `/${role}/my-profile`,
+      title: "",
+      icon: <SuperAdminNotification />,
     },
-     {
-      label: <Link href={`/${role}/category`}>Service Page</Link>,
-      icon: <TableOutlined />,
-      key: `/${role}/my-category`,
-    },
-   
-    {
-      label: <Link href={`/${role}/booking`}>Bookings</Link>,
-      icon: <ScheduleOutlined />,
-      key: `/${role}/booking`,
-    },
-     {
-      label: <Link href={`/${role}/feedback`}>Feedback Form</Link>,
-      icon: <ScheduleOutlined />,
-      key: `/${role}/feedback`,
-    },
- 
-    // {
-    //   label: <Link href={`/${role}/payment`}>Payment</Link>,
-    //   icon: <CreditCardOutlined />,
-    //   key: `/${role}/payment`,
-    // },
-    {
-      label:"",
-      icon: <CustomerNotification/>,
-      key: `notification`,
-    },
-     {
-      label:'',
-      icon: <CustomerBookingCart/>,
-      key: `drawer`,
-    },
-   
   ];
- const { role:roles } = getUserInfo() as any;
- if(!roles){
 
- }
-  if (role === USER_ROLE.SUPER_ADMIN) return superAdminSidebarItems;
-  else if (role === USER_ROLE.ADMIN) return adminSidebarItems;
-  else if (role === USER_ROLE.CUSTOMER) return customerSidebarItems;
-    return publicSidebarItems;
+  const customerSidebarItems: SidebarItem[] = [
+    ...defaultSidebarItems,
+    {
+      title: "Profile",
+      href: `/${role}/my-profile`,
+      icon: <User className="h-4 w-4" />,
+    },
+    {
+      title: "Service Page",
+      href: `/${role}/category`,
+      icon: <LayoutGrid className="h-4 w-4" />,
+    },
+    {
+      title: "Bookings",
+      href: `/${role}/booking`,
+      icon: <Calendar className="h-4 w-4" />,
+    },
+    {
+      title: "Feedback Form",
+      href: `/${role}/feedback`,
+      icon: <FileText className="h-4 w-4" />,
+    },
+    {
+      title: "",
+      icon: <CustomerNotification />,
+    },
+    {
+      title: "",
+      icon: <CustomerBookingCart />,
+    },
+  ];
+
+  const items = role === USER_ROLE.SUPER_ADMIN
+    ? superAdminSidebarItems
+    : role === USER_ROLE.ADMIN
+    ? adminSidebarItems
+    : role === USER_ROLE.CUSTOMER
+    ? customerSidebarItems
+    : publicSidebarItems;
+
+  return (
+    <NavigationMenu>
+      <NavigationMenuList>
+        {items.map((item, index) => (
+          <NavigationMenuItem key={index}>
+            {item.items ? (
+              <>
+                <NavigationMenuTrigger className="h-9">
+                  {item.icon}
+                  <span className="ml-2">{item.title}</span>
+                </NavigationMenuTrigger>
+                <NavigationMenuContent>
+                  <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
+                    {item.items.map((subItem) => (
+                      <ListItem
+                        key={subItem.href}
+                        href={subItem.href}
+                        title={subItem.title}
+                      >
+                        {subItem.description}
+                      </ListItem>
+                    ))}
+                  </ul>
+                </NavigationMenuContent>
+              </>
+            ) : (
+              <Link href={item.href || "#"} legacyBehavior passHref>
+                <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+                  {item.icon}
+                  {item.title && <span className="ml-2">{item.title}</span>}
+                </NavigationMenuLink>
+              </Link>
+            )}
+          </NavigationMenuItem>
+        ))}
+      </NavigationMenuList>
+    </NavigationMenu>
+  );
 };

@@ -1,19 +1,21 @@
 import React from 'react';
-import { Avatar, Badge, Space } from 'antd';
-import { NotificationFilled, NotificationOutlined, NotificationTwoTone, ShoppingCartOutlined } from '@ant-design/icons';
-import { useAdminsQuery } from '@/redux/api/adminApi';
-import { getUserInfo } from '@/services/auth.service';
+import { Badge } from '@/components/ui/badge';
+import { ShoppingCart } from 'lucide-react';
 
-const CartBadges = ({messageCount}:{messageCount:any}) => (
- 
-  <Space size="small">
-    {/* count={99} overflowCount={10} */}
-    <Badge count={messageCount} overflowCount={50}>
-       <ShoppingCartOutlined style={{backgroundColor:"white",fontSize:'20px',textAlign:'center',margin:'4px',padding:'0px',justifyContent:'center',alignItems:'center'}} />
-  
-      {/* <Avatar style={{backgroundColor:"blue"}} shape="square" size="default"  /> */}
+interface CartBadgesProps {
+  messageCount: number;
+}
+
+const CartBadges = ({ messageCount }: CartBadgesProps) => (
+  <div className="relative inline-flex items-center">
+    <Badge 
+      variant="destructive" 
+      className="absolute -top-2 -right-2 h-5 w-5 flex items-center justify-center p-0"
+    >
+      {messageCount > 50 ? '50+' : messageCount}
     </Badge>
-  </Space>
+    <ShoppingCart className="h-5 w-5" />
+  </div>
 );
 
 export default CartBadges;

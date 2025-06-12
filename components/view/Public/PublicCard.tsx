@@ -1,45 +1,56 @@
 "use client"
 import React from 'react';
-import { Card, Space } from 'antd';
 import { ICategory, IMeta } from '@/types';
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
+
+interface PublicCardProps {
+  categoryData: {
+    data: ICategory[];
+    meta: IMeta;
+  };
+  children: React.ReactNode;
+  title?: string;
+  hoverable?: boolean;
+  className?: string;
+}
 
 const PublicCard = ({ 
-    categoryData,
-    children,  
-    title,
-    hoverable,
-    className,
-   }: { 
-    categoryData:any,
-    children:React.ReactNode;
-    title?:string;
-    hoverable?:boolean;
-    className?:string; }) => {
+  categoryData,
+  children,  
+  title,
+  hoverable,
+  className,
+}: PublicCardProps) => {
   const data = categoryData.data;
   const meta = categoryData.meta as IMeta;
 
   return (
-    <Space direction="vertical" size={16}>
-      {/* Access data and meta as needed */}
+    <div className="space-y-4">
       {data?.map((category: ICategory) => (
-        
-        <Card key={category.id}
-        title={title}
-  hoverable={hoverable}
-  className={className} 
-  bordered={false} 
-  style={{ width: 300 }}
+        <Card 
+          key={category.id}
+          className={cn(
+            "w-[300px] transition-all duration-200",
+            hoverable && "hover:shadow-lg hover:scale-[1.02]",
+            className
+          )}
         >
-          {children}
-          <h2>{category.name}</h2>
-          {/* Access other properties of the category object as needed */}
-          <p>Category ID: {category.id}</p>
-          <p>Profile Image: {category.profileImage}</p>
-          {/* Add more information from the category object */}
+          <CardHeader>
+            {title && <CardTitle>{title}</CardTitle>}
+          </CardHeader>
+          <CardContent>
+            {children}
+            <h2 className="text-xl font-semibold mb-2">{category.name}</h2>
+            <p className="text-sm text-muted-foreground">Category ID: {category.id}</p>
+            {category.profileImage && (
+              <p className="text-sm text-muted-foreground">Profile Image: {category.profileImage}</p>
+            )}
+          </CardContent>
         </Card>
       ))}
-      <p>Total Categories: {meta.total}</p>
-   </Space>
+      <p className="text-sm text-muted-foreground">Total Categories: {meta.total}</p>
+    </div>
   );
 };
 
