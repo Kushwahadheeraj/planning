@@ -12,7 +12,7 @@ import Autoplay from "embla-carousel-autoplay";
 
 const images = [
     'https://tandteventplanning.com/wp-content/uploads/2019/09/categories-of-event.png',
-    'https://www.inventiva.co.in/wp-content/uploads/2022/01/images-8.jpeg',
+    // 'https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.vecteezy.com%2Ffree-photos%2Fevent&psig=AOvVaw0rTrGy-UyY-lfFny6BMf2U&ust=1749797356130000&source=images&cd=vfe&opi=89978449&ved=0CBIQjRxqFwoTCKCwvaCl640DFQAAAAAdAAAAABAE',
     // Add other image URLs here
 ];
 
@@ -43,8 +43,8 @@ const Banner = () => {
           </CarouselItem>
         ))}
       </CarouselContent>
-      <CarouselPrevious />
-      <CarouselNext />
+      {/* <CarouselPrevious />
+      <CarouselNext /> */}
     </Carousel>
   );
 };

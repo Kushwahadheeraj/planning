@@ -64,7 +64,7 @@ const ListItem = React.forwardRef<
 });
 ListItem.displayName = "ListItem";
 
-export const sidebarItems = (role: string) => {
+export const getSidebarItems = (role: string): SidebarItem[] => {
   const publicSidebarItems: SidebarItem[] = [
     {
       title: "Home",
@@ -166,13 +166,17 @@ export const sidebarItems = (role: string) => {
     },
   ];
 
-  const items = role === USER_ROLE.SUPER_ADMIN
+  return role === USER_ROLE.SUPER_ADMIN
     ? superAdminSidebarItems
     : role === USER_ROLE.ADMIN
     ? adminSidebarItems
     : role === USER_ROLE.CUSTOMER
     ? customerSidebarItems
     : publicSidebarItems;
+};
+
+export const SidebarNavigation = ({ role }: { role: string }) => {
+  const items = getSidebarItems(role);
 
   return (
     <NavigationMenu>

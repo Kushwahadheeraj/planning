@@ -1,12 +1,11 @@
 import { tagTypes } from "@/redux/tag-types";
-import { IDepartment, IMeta, IPost, IReview } from "@/types";
+import { IMeta, IPost } from "@/types";
 import { baseApi } from "./baseApi";
 
 const BLOGPOST_URL = "/posts";
 
 export const blogpostApi = baseApi.injectEndpoints({
   endpoints: (build) => ({
-   
     blogs: build.query({
       query: (arg: Record<string, any>) => {
         return {
@@ -15,7 +14,7 @@ export const blogpostApi = baseApi.injectEndpoints({
           params: arg,
         };
       },
-      transformResponse: (response:IPost [], meta: IMeta) => {
+      transformResponse: (response: IPost[], meta: IMeta) => {
         return {
           blogs: response,
           meta,
@@ -23,7 +22,6 @@ export const blogpostApi = baseApi.injectEndpoints({
       },
       providesTags: [tagTypes.blog],
     }),
-    // get single academic department
     blog: build.query({
       query: (id: string | string[] | undefined) => ({
         url: `${BLOGPOST_URL}/${id}`,
@@ -31,7 +29,6 @@ export const blogpostApi = baseApi.injectEndpoints({
       }),
       providesTags: [tagTypes.blog],
     }),
-    // create a new academic department
     addBlog: build.mutation({
       query: (data) => ({
         url: "/posts/create-post",
@@ -40,7 +37,6 @@ export const blogpostApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: [tagTypes.blog],
     }),
-    // update ac department
     updateBlog: build.mutation({
       query: (data) => ({
         url: `${BLOGPOST_URL}/${data.id}`,
@@ -49,8 +45,6 @@ export const blogpostApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: [tagTypes.blog],
     }),
-
-    // delete ac department
     deleteBlog: build.mutation({
       query: (id) => ({
         url: `${BLOGPOST_URL}/${id}`,
@@ -62,9 +56,9 @@ export const blogpostApi = baseApi.injectEndpoints({
 });
 
 export const {
-  useAddBlogMutation,
-  useDeleteBlogMutation,
-  useBlogQuery,
   useBlogsQuery,
+  useBlogQuery,
+  useAddBlogMutation,
   useUpdateBlogMutation,
+  useDeleteBlogMutation,
 } = blogpostApi;

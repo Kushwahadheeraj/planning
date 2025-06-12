@@ -12,6 +12,12 @@ export const authApi = baseApi.injectEndpoints({
         method: "POST",
         data: loginData,
       }),
+      transformResponse: (response: any) => {
+        return {
+          accessToken: response?.data?.accessToken,
+          user: response?.data?.user,
+        };
+      },
       invalidatesTags: [tagTypes.user], //cash remove
     }),
   }),

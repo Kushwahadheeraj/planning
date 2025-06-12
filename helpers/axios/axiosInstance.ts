@@ -2,7 +2,7 @@ import { authKey } from "@/constants/storageKey";
 import { getNewAccessToken } from "@/services/auth.service";
 import { IGenericErrorResponse, ResponseSuccessType } from "@/types";
 import { getFromLocalStorage, setToLocalStorage } from "@/utils/local-storage";
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
 
 const instance = axios.create();
 instance.defaults.headers.post["Content-Type"] = "application/json";
@@ -26,29 +26,32 @@ instance.interceptors.request.use(
 );
 
 instance.interceptors.response.use(
-  // @ts-ignore
-  function (response) {
-    const responseObject: ResponseSuccessType = {
-      data: response?.data?.data,
-      meta: response?.data?.meta,
-      status: response?.data?.statusCode,
-      message: response?.data?.message,
-      success: response?.data.success,
+  function (response: AxiosResponse) {
+    return {
+      ...response,
+      data: {
+        data: response?.data?.data,
+        meta: response?.data?.meta,
+      },
     };
-    return responseObject;
   },
   async function (error) {
-    if (error?.response?.status === 403) {
+    const config = error?.config;
+    if (error?.response?.status === 403 && !config?.sent) {
+      config.sent = true;
+      const response = await getNewAccessToken();
+      const accessToken = response?.data?.accessToken;
+      config.headers["Authorization"] = accessToken;
+      setToLocalStorage(authKey, accessToken);
+      return instance(config);
     } else {
       const responseObject: IGenericErrorResponse = {
         statusCode: error?.response?.data?.statusCode || 500,
         message: error?.response?.data?.message || "Something went wrong",
         errorMessages: error?.response?.data?.message,
       };
-      return responseObject;
+      return Promise.reject(responseObject);
     }
-
-    // return Promise.reject(error);
   }
 );
 

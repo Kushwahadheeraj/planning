@@ -31,7 +31,7 @@ export const axiosBaseQuery =
         },
         withCredentials: true,
       });
-      return result;
+      return { data: result.data.data };
     } catch (axiosError) {
       let err = axiosError as AxiosError;
       return {
@@ -40,12 +40,5 @@ export const axiosBaseQuery =
           data: err.response?.data || err.message,
         },
       };
-      // let err = axiosError as AxiosError;
-      // return {
-      //   error: {
-      //     status: err.response?.status,
-      //     data: err.response?.data || err.message,
-      //   },
-      // };
     }
   };

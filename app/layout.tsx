@@ -1,9 +1,10 @@
-import './globals.css'
 import type { Metadata, Viewport } from 'next'
 import { Inter } from 'next/font/google'
+import './globals.css'
 import Providers from '@/lib/Providers'
+import { Toaster } from "sonner"
 
-const inter = Inter({ subsets: ['latin'] })
+const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: 'Event Planning Platform',
@@ -20,15 +21,16 @@ export const viewport: Viewport = {
 export default function RootLayout({
   children,
 }: {
-  children: React.ReactNode
+  children: React.ReactNode;
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={inter.className} suppressHydrationWarning>
         <Providers>
           {children}
+          <Toaster />
         </Providers>
       </body>
     </html>
-  )
+  );
 } 

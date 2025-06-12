@@ -1,92 +1,103 @@
 "use client";
+
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import { useUserLoginMutation } from "@/redux/api/authApi";
+import { storeUserInfo } from "@/services/auth.service";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import Image from "next/image";
-import Form from "@/components/Forms/Form";
-import { SubmitHandler } from "react-hook-form";
-import { getUserInfo, storeUserInfo } from "@/services/auth.service";
-import { useRouter } from "next/navigation";
-import { loginSchema } from "@/schemas/login";
-import { yupResolver } from "@hookform/resolvers/yup";
-import FormInput from "@/components/Forms/FormInput";
-import { useUserLoginMutation } from "@/redux/api/authApi";
-import logi from '../../../../public/Security On-cuate.svg';
-import conte from '../../styles/singleproduct.module.css';
-import Link from "next/link";
 import { toast } from "sonner";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
-type FormValues = {
-  id: string;
-  password: string;
-};
+const loginSchema = z.object({
+  email: z.string().email("Invalid email address"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
+});
+
+type LoginFormData = z.infer<typeof loginSchema>;
 
 const LoginPage = () => {
   const [userLogin] = useUserLoginMutation();
   const router = useRouter();
+  
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<LoginFormData>({
+    resolver: zodResolver(loginSchema),
+  });
 
-  const onSubmit: SubmitHandler<FormValues> = async (data: any) => {
+  const onSubmit = async (data: LoginFormData) => {
     try {
-      const res = await userLogin({ ...data }).unwrap();
+      const res = await userLogin(data).unwrap();
       if (res?.accessToken) {
-        storeUserInfo({ accessToken: res?.accessToken });
-        const {role} = getUserInfo() as any;
-        router.push(`${role}/my-profile`);
+        storeUserInfo({ accessToken: res.accessToken });
+        router.push("/");
         toast.success("User logged in successfully!");
-      }
-      if (!res?.accessToken) {
-        toast.error("User did not logged in!");
+      } else {
+        toast.error("Login failed. Please try again.");
       }
     } catch (err: any) {
-      console.error(err.message);
-      toast.error(err.message || "Login failed");
+      toast.error(err?.data?.message || "Something went wrong");
     }
   };
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-        <div className="flex justify-center">
-          <Image src={logi} width={400} height={300} alt="login image" className="w-full max-w-md" />
-        </div>
-        
-        <Card className="w-full max-w-md mx-auto">
-          <CardHeader>
-            <CardTitle className="text-2xl font-bold text-center">First login your account</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Form submitHandler={onSubmit} resolver={yupResolver(loginSchema)}>
-              <div className="space-y-4">
-                <FormInput 
-                  name="id" 
-                  type="text" 
-                  label="User Id" 
-                  required 
-                />
-                
-                <FormInput
-                  name="password"
-                  type="password"
-                  label="User Password"
-                  required
-                />
-                
-                <Button type="submit" className="w-full">
-                  Login
-                </Button>
-              </div>
-            </Form>
-            
-            <div className="mt-4 text-right">
-              <Link 
-                href="/" 
-                className="text-sm text-blue-600 hover:text-blue-800 hover:underline"
-              >
-                Please Register Here
-              </Link>
+      <h1 className="text-3xl font-bold text-center mb-8">Login to your account</h1>
+
+      <Card className="w-full max-w-md mx-auto">
+        <CardHeader>
+          <CardTitle className="text-2xl font-bold text-center">Sign in</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
+                type="email"
+                placeholder="Enter your email"
+                {...register("email")}
+              />
+              {errors.email && (
+                <p className="text-sm text-red-500">{errors.email.message}</p>
+              )}
             </div>
-          </CardContent>
-        </Card>
-      </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="password">Password</Label>
+              <Input
+                id="password"
+                type="password"
+                placeholder="Enter your password"
+                {...register("password")}
+              />
+              {errors.password && (
+                <p className="text-sm text-red-500">{errors.password.message}</p>
+              )}
+            </div>
+
+            <Button type="submit" className="w-full">
+              Sign in
+            </Button>
+          </form>
+          
+          <div className="mt-4 text-center">
+            <Link 
+              href="/sign-up" 
+              className="text-sm text-blue-600 hover:text-blue-800 hover:underline"
+            >
+              Don't have an account? Sign up
+            </Link>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 };

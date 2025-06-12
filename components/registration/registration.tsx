@@ -3,8 +3,6 @@ import Form from "@/components/Forms/Form";
 import FormDatePicker from "@/components/Forms/FormDatePicker";
 import FormInput from "@/components/Forms/FormInput";
 import FormSelectField from "@/components/Forms/FormSelectField";
-import FormTextArea from "@/components/Forms/FormTextArea";
-//import UploadImage from "@/components/ui/UploadImage.tsx/UploadImage";
 import { selectBloodGroupOptions, selectorGenderOptions } from "@/constants/selectConstantOptions";
 import { useAddCustomerDataMutation } from "@/redux/api/customerApi";
 import { customerSchema } from "@/schemas/customer";
@@ -15,7 +13,6 @@ import { toast } from "sonner";
 
 const RegistrationPage = () => {
   const [addCustomerData] = useAddCustomerDataMutation();
-  //@ts-ignore
 
   const onSubmit = async (values: any) => {
     const obj = { ...values };

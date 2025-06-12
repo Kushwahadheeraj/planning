@@ -54,7 +54,7 @@ const Reviews = () => {
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
         <FormField
           control={form.control}
-          name="coders"
+        name="coders"
           render={({ field }) => (
             <FormItem className="flex flex-col">
               <FormLabel>Top coders</FormLabel>
@@ -113,7 +113,7 @@ const Reviews = () => {
 
         <FormField
           control={form.control}
-          name="bio"
+        name="bio"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Bio</FormLabel>
@@ -121,7 +121,7 @@ const Reviews = () => {
                 <Textarea
                   placeholder="You can use @ to ref user here"
                   className="resize-none"
-                  rows={3}
+          rows={3}
                   {...field}
                 />
               </FormControl>
