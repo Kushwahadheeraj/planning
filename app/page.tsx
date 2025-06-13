@@ -7,7 +7,6 @@ import { Card, CardContent} from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 import Image from "next/image";
-import RegistrationPage from "@/components/registration/registration";
 import FooterPage from "@/components/Footer/footer";
 import ServicePage from "@/components/servicepage/servicepage";
 import { useFeedbacksQuery } from "@/redux/api/feedbackApi";

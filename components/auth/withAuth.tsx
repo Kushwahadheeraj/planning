@@ -53,7 +53,7 @@ export function withAuth<P extends object>(
       };
 
       checkAuth();
-    }, [router, requiredRole, supabase]);
+    });
 
     if (isLoading) {
       return <div>Loading...</div>;
